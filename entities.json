@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "CustomerProfile": {
+      "tableName": "CustomerProfile",
+      "description": "Customer profile information",
+      "identifierField": "customer_id",
+      "fields": {
+        "customer_id": { "type": "string", "description": "Unique Customer ID" },
+        "name": { "type": "string", "description": "Customer full name" },
+        "email": { "type": "string", "description": "Customer email address" },
+        "phone": { "type": "string", "description": "Customer phone number" },
+        "created_at": { "type": "datetime", "description": "Account creation timestamp" }
+      },
+      "allowedFilterFields": ["customer_id", "email", "phone"],
+      "defaultOrderBy": "created_at DESC",
+      "relationships": {
+        "Subscription": { "foreignKey": "customer_id", "type": "one-to-many" },
+        "Interaction": { "foreignKey": "customer_id", "type": "one-to-many" }
+      }
+    },
+    "Interaction": {
+      "tableName": "Interaction",
+      "description": "Customer interaction history",
+      "identifierField": "id",
+      "fields": {
+        "id": { "type": "integer", "description": "Unique interaction ID" },
+        "customer_id": { "type": "string", "description": "Customer ID reference" },
+        "summary": { "type": "string", "description": "Summary of the interaction" },
+        "channel": { "type": "string", "description": "Communication channel (email, phone, chat)" },
+        "timestamp": { "type": "datetime", "description": "When the interaction occurred" }
+      },
+      "allowedFilterFields": ["id", "customer_id", "summary", "channel", "timestamp"],
+      "defaultOrderBy": "timestamp DESC",
+      "relationships": {
+        "CustomerProfile": { "foreignKey": "customer_id", "type": "many-to-one" }
+      }
+    },
+    "Subscription": {
+      "tableName": "Subscription",
+      "description": "Customer subscription information",
+      "identifierField": "id",
+      "fields": {
+        "id": { "type": "integer", "description": "Subscription ID" },
+        "customer_id": { "type": "string", "description": "Customer ID reference" },
+        "plan_name": { "type": "string", "description": "Subscription plan name" },
+        "status": { "type": "string", "description": "Subscription status (active, cancelled, expired)" },
+        "start_date": { "type": "datetime", "description": "Subscription start date" },
+        "end_date": { "type": "datetime", "description": "Subscription end date" }
+      },
+      "allowedFilterFields": ["id", "customer_id", "plan_name", "status", "start_date", "end_date"],
+      "defaultOrderBy": "start_date DESC",
+      "relationships": {
+        "CustomerProfile": { "foreignKey": "customer_id", "type": "many-to-one" },
+        "Product": { "foreignKey": "id", "localKey": "subscription_id", "type": "one-to-many" }
+      }
+    },
+    "Product": {
+      "tableName": "Product",
+      "description": "Products within a subscription",
+      "identifierField": "id",
+      "fields": {
+        "id": { "type": "integer", "description": "Product ID" },
+        "subscription_id": { "type": "integer", "description": "Parent subscription ID" },
+        "product_name": { "type": "string", "description": "Product name" },
+        "sku": { "type": "string", "description": "Product SKU code" },
+        "quantity": { "type": "integer", "description": "Quantity" },
+        "price": { "type": "decimal", "description": "Unit price" }
+      },
+      "allowedFilterFields": ["id", "subscription_id", "product_name", "sku", "quantity", "price"],
+      "defaultOrderBy": "product_name ASC",
+      "relationships": {
+        "Subscription": { "foreignKey": "subscription_id", "localKey": "id", "type": "many-to-one" }
+      }
+    }
+  },
+  "defaultLimit": 100,
+  "maxLimit": 1000
+}
